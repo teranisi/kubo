@@ -20,6 +20,8 @@ import (
 	"github.com/libp2p/go-libp2p/core/host"
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/libp2p/go-libp2p/core/routing"
+	"github.com/piax/go-bsns/rqdht"
+
 	"go.uber.org/fx"
 
 	config "github.com/ipfs/kubo/config"
@@ -140,6 +142,17 @@ func BaseRouting(cfg *config.Config) interface{} {
 				DHTClient:     fullRTClient,
 				ContentRouter: fullRTClient,
 			}, nil
+		}
+
+		var bsr *rqdht.NSDHT
+		if dht, ok := in.Router.(*rqdht.NSDHT); ok {
+			bsr = dht
+
+			lc.Append(fx.Hook{
+				OnStop: func(ctx context.Context) error {
+					return bsr.Close()
+				},
+			})
 		}
 
 		return processInitialRoutingOut{
@@ -324,4 +337,8 @@ func autoRelayFeeder(cfgPeering config.Peering, peerChan chan<- peer.AddrInfo) f
 			},
 		})
 	})
+}
+
+func RQDHTOption(args RoutingOptionArgs) (routing.Routing, error) {
+	return rqdht.New(args.Host, rqdht.Datastore(args.Datastore), rqdht.RecordValidator(args.Validator), rqdht.BootstrapAddrs(args.BootstrapPeers...))
 }

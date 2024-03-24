@@ -61,6 +61,7 @@ const (
 	routingOptionDHTClientKwd  = "dhtclient"
 	routingOptionDHTKwd        = "dht"
 	routingOptionDHTServerKwd  = "dhtserver"
+	routingOptionRQDHTKwd      = "rqdht"
 	routingOptionNoneKwd       = "none"
 	routingOptionCustomKwd     = "custom"
 	routingOptionDefaultKwd    = "default"
@@ -421,6 +422,8 @@ func daemonFunc(req *cmds.Request, re cmds.ResponseEmitter, env cmds.Environment
 		ncfg.Routing = libp2p.DHTOption
 	case routingOptionDHTServerKwd:
 		ncfg.Routing = libp2p.DHTServerOption
+	case routingOptionRQDHTKwd:
+		ncfg.Routing = libp2p.RQDHTOption
 	case routingOptionNoneKwd:
 		ncfg.Routing = libp2p.NilRouterOption
 	case routingOptionCustomKwd:

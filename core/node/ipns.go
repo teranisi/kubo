@@ -10,6 +10,7 @@ import (
 	"github.com/libp2p/go-libp2p/core/crypto"
 	"github.com/libp2p/go-libp2p/core/peerstore"
 	madns "github.com/multiformats/go-multiaddr-dns"
+	"github.com/piax/go-bsns/rqdht"
 
 	"github.com/ipfs/boxo/namesys"
 	"github.com/ipfs/boxo/namesys/republisher"
@@ -24,15 +25,17 @@ func RecordValidator(ps peerstore.Peerstore) record.Validator {
 	return record.NamespacedValidator{
 		"pk":   record.PublicKeyValidator{},
 		"ipns": ipns.Validator{KeyBook: ps},
+		"hrns": rqdht.HRNSValidator{},
 	}
 }
 
 // Namesys creates new name system
-func Namesys(cacheSize int, cacheMaxTTL time.Duration) func(rt irouting.ProvideManyRouter, rslv *madns.Resolver, repo repo.Repo) (namesys.NameSystem, error) {
-	return func(rt irouting.ProvideManyRouter, rslv *madns.Resolver, repo repo.Repo) (namesys.NameSystem, error) {
+func Namesys(cacheSize int, cacheMaxTTL time.Duration) func(rqdht *rqdht.NSDHT, rt irouting.ProvideManyRouter, rslv *madns.Resolver, repo repo.Repo) (namesys.NameSystem, error) {
+	return func(rqdht *rqdht.NSDHT, rt irouting.ProvideManyRouter, rslv *madns.Resolver, repo repo.Repo) (namesys.NameSystem, error) {
 		opts := []namesys.Option{
 			namesys.WithDatastore(repo.Datastore()),
-			namesys.WithDNSResolver(rslv),
+			//namesys.WithDNSResolver(rslv),
+			namesys.WithHRNSResolver(rqdht),
 			namesys.WithMaxCacheTTL(cacheMaxTTL),
 		}
 

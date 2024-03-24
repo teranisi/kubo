@@ -11,6 +11,7 @@ import (
 
 	cmds "github.com/ipfs/go-ipfs-cmds"
 	logging "github.com/ipfs/go-log"
+	bscmds "github.com/piax/go-bsns/ipfs"
 )
 
 var log = logging.Logger("core/commands")
@@ -140,6 +141,7 @@ var rootSubcommands = map[string]*cmds.Command{
 	"config":    ConfigCmd,
 	"dag":       dag.DagCmd,
 	"dht":       DhtCmd,
+	"hrns":      bscmds.BsCmd,
 	"routing":   RoutingCmd,
 	"diag":      DiagCmd,
 	"id":        IDCmd,
